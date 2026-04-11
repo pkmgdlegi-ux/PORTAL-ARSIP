@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portal Arsip Puskesmas Gondanglegi</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body.loading-lock { overflow: hidden; }
+        
+        @keyframes fadeBlurIn {
+            0% { opacity: 0; filter: blur(12px); transform: translateY(20px); }
+            100% { opacity: 1; filter: blur(0px); transform: translateY(0); }
+        }
+        .animate-fade-blur { animation: fadeBlurIn 1.5s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
+        .delay-1 { animation-delay: 1s; } 
+        .delay-2 { animation-delay: 1.5s; }
+        .delay-3 { animation-delay: 2s; } 
+        .delay-4 { animation-delay: 2.5s; }
+
+        .tab-content { display: none; opacity: 0; }
+        .tab-content.active { display: block; opacity: 1; animation: slideUp 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards; }
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .folder-content { display: none; }
+        .folder-content.open { display: block; animation: fadeIn 0.4s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        
+        .loader { border: 3px solid #f3f4f6; border-top: 3px solid #2563eb; border-radius: 50%; width: 36px; height: 36px; animation: spin 1s linear infinite; margin: 30px auto; }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 font-sans loading-lock">
+
+    <div id="preloader" class="fixed inset-0 z-50 bg-slate-950 flex items-center justify-center transition-opacity duration-1000">
+        <div class="text-center">
+            <svg class="w-10 h-10 text-slate-400 animate-spin mx-auto mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+            <p class="text-slate-500 tracking-[0.2em] text-sm uppercase font-light">Memuat Portal...</p>
+        </div>
+    </div>
+
+    <header class="relative h-[65vh] w-full flex flex-col items-center justify-center overflow-hidden bg-slate-900">
+        <div class="absolute inset-0 z-0">
+            <img src="bg-puskesmas.jpeg" alt="Background" class="w-full h-full object-cover object-top opacity-30">
+            <div class="absolute inset-0 bg-gradient-to-b from-slate-900/60 via-slate-900/40 to-slate-50"></div>
+        </div>
+        <div class="relative z-10 text-center px-6 mt-10">
+            <p class="text-slate-200 tracking-[0.3em] uppercase text-xs md:text-sm font-medium opacity-0 animate-fade-blur delay-1">Portal Terpadu</p>
+            <p class="text-slate-300 font-light text-sm md:text-base mt-3 max-w-lg mx-auto leading-relaxed opacity-0 animate-fade-blur delay-2">Pusat informasi, manajemen arsip dinamis, dan data klaster terintegrasi.</p>
+        </div>
+    </header>
+
+    <main id="portal-area" class="relative z-20 max-w-5xl mx-auto px-4 md:px-8 mt-[-60px] pb-20">
+        
+        <!-- ===== TOMBOL TAB (SEMUA DI SINI) ===== -->
+        <div class="flex flex-wrap justify-center gap-2 md:gap-4 mb-8 opacity-0 animate-fade-blur delay-3">
+            <button onclick="bukaTab('menu-link', this)" class="tab-btn active bg-white shadow-lg text-blue-700 px-6 py-3 rounded-full font-semibold text-sm transition-all hover:-translate-y-1 hover:shadow-xl border border-blue-100 flex items-center gap-2">
+                <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13.19 8.688a4.5 4.5 0 011.242 7.244l-4.5 4.5a4.5 4.5 0 01-6.364-6.364l1.757-1.757m13.35-.622l1.757-1.757a4.5 4.5 0 00-6.364-6.364l-4.5 4.5a4.5 4.5 0 001.242 7.244" /></svg>
+                Tautan Esensial
+            </button>
+            <button onclick="bukaTab('menu-klaster', this)" class="tab-btn bg-white shadow-md text-slate-500 hover:text-blue-600 px-6 py-3 rounded-full font-medium text-sm transition-all hover:-translate-y-1 hover:shadow-xl flex items-center gap-2">
+                <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 3v1.5M3 21v-6m0 0l2.77-.693a9 9 0 016.208.682l.108.054a9 9 0 006.086.71l3.114-.732a48.524 48.524 0 01-.005-10.499l-3.11.732a9 9 0 01-6.085-.711l-.108-.054a9 9 0 00-6.208-.682L3 4.5M3 15V4.5" /></svg>
+                Data Klaster PKP
+            </button>
+            <button onclick="bukaTab('menu-arsip', this)" class="tab-btn bg-white shadow-md text-slate-500 hover:text-blue-600 px-6 py-3 rounded-full font-medium text-sm transition-all hover:-translate-y-1 hover:shadow-xl flex items-center gap-2">
+                <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M20.25 6.375c0 2.278-3.694 4.125-8.25 4.125S3.75 8.653 3.75 6.375m16.5 0c0-2.278-3.694-4.125-8.25-4.125S3.75 4.097 3.75 6.375m16.5 0v11.25c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125V6.375m16.5 0v3.75m-16.5-3.75v3.75m16.5 0v3.75C20.25 16.153 16.556 18 12 18s-8.25-1.847-8.25-4.125v-3.75m16.5 0c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125" /></svg>
+                Data Dukung PKP (Drive)
+            </button>
+            <!-- TOMBOL CATATAN BERSAMA (POSISI BENAR: DI DALAM DIV TOMBOL) -->
+            <button onclick="bukaTab('menu-catatan', this)" class="tab-btn bg-white shadow-md text-slate-500 hover:text-blue-600 px-6 py-3 rounded-full font-medium text-sm transition-all hover:-translate-y-1 hover:shadow-xl flex items-center gap-2">
+                <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
+                </svg>
+                Catatan Bersama
+            </button>
+        </div>
+
+        <!-- ===== KONTEN TAB 1: TAUTAN ESENSIAL ===== -->
+        <div id="menu-link" class="tab-content active bg-white p-8 rounded-2xl shadow-xl border border-slate-100">
+            <h2 class="text-2xl font-bold text-slate-800 mb-6 text-center md:text-left">Situs & Aplikasi Terintegrasi</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <a href="https://malang.epuskesmas.id/" target="_blank" class="group block p-6 border border-slate-200 rounded-xl hover:bg-blue-50 hover:border-blue-300 transition-colors">
+                    <h3 class="font-bold text-lg text-slate-700 group-hover:text-blue-700 mb-2">e-Puskesmas</h3>
+                    <p class="text-sm text-slate-500">Sistem Informasi Manajemen Puskesmas (SIMPUS) terintegrasi.</p>
+                </a>
+                <a href="https://pcarejkn.bpjs-kesehatan.go.id/eclaim/Login" target="_blank" class="group block p-6 border border-slate-200 rounded-xl hover:bg-blue-50 hover:border-blue-300 transition-colors">
+                    <h3 class="font-bold text-lg text-slate-700 group-hover:text-blue-700 mb-2">P-Care BPJS</h3>
+                    <p class="text-sm text-slate-500">Aplikasi pelayanan fasilitas kesehatan tingkat pertama BPJS.</p>
+                </a>
+                <a href="https://sehatindonesiaku.kemkes.go.id/auth/login" target="_blank" class="group block p-6 border border-slate-200 rounded-xl hover:bg-blue-50 hover:border-blue-300 transition-colors">
+                    <h3 class="font-bold text-lg text-slate-700 group-hover:text-blue-700 mb-2">ASIK Kemenkes</h3>
+                    <p class="text-sm text-slate-500">Aplikasi Sehat Indonesiaku untuk pelaporan program kesehatan.</p>
+                </a>
+            </div>
+        </div>
+
+        <!-- ===== KONTEN TAB 2: DATA KLASTER ===== -->
+        <div id="menu-klaster" class="tab-content bg-white p-8 rounded-2xl shadow-xl border border-slate-100">
+            <h2 class="text-2xl font-bold text-slate-800 mb-2">Monitoring Klaster Puskesmas</h2>
+            <p class="text-slate-500 mb-8">Pilih dokumen spreadsheet di bawah ini untuk melihat rincian data masing-masing klaster.</p>
+            <div class="space-y-4">
+                <a href="https://docs.google.com/spreadsheets/d/1fdN61yx0GlwyY0QSUrgDyYgQfpbpIUiE02gADzB5zmE/edit?gid=1879076967#gid=1879076967" target="_blank" class="flex items-center justify-between p-5 bg-slate-50 rounded-lg hover:bg-emerald-50 hover:shadow-md transition-all border border-slate-100 group">
+                    <div class="flex items-center gap-4">
+                        <div class="bg-emerald-100 p-3 rounded-full text-emerald-600"><svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20"><path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"/><path fill-rule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z" clip-rule="evenodd"/></svg></div>
+                        <h3 class="font-bold text-slate-700 group-hover:text-emerald-700">Data Klaster 1: Manajemen Puskesmas</h3>
+                    </div>
+                    <span class="text-emerald-500 font-medium text-sm hidden md:block">Buka Dokumen →</span>
+                </a>
+                <a href="https://docs.google.com/spreadsheets/d/1QUGzYiOXheV0yb8Gq2NeFAZQ3ygMs-Bz-sd7tS4mYkg/edit?gid=1803883900#gid=1803883900" target="_blank" class="flex items-center justify-between p-5 bg-slate-50 rounded-lg hover:bg-emerald-50 hover:shadow-md transition-all border border-slate-100 group">
+                    <div class="flex items-center gap-4">
+                        <div class="bg-emerald-100 p-3 rounded-full text-emerald-600"><svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20"><path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"/><path fill-rule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z" clip-rule="evenodd"/></svg></div>
+                        <h3 class="font-bold text-slate-700 group-hover:text-emerald-700">Data Klaster 2: Ibu, Anak & KB</h3>
+                    </div>
+                    <span class="text-emerald-500 font-medium text-sm hidden md:block">Buka Dokumen →</span>
+                </a>
+                <a href="https://docs.google.com/spreadsheets/d/1iq2cbDJtoIPQHVrE4TT7QSzlxpYsyd6Y5Ibqqsht1uI/edit?gid=687981366#gid=687981366" target="_blank" class="flex items-center justify-between p-5 bg-slate-50 rounded-lg hover:bg-emerald-50 hover:shadow-md transition-all border border-slate-100 group">
+                    <div class="flex items-center gap-4">
+                        <div class="bg-emerald-100 p-3 rounded-full text-emerald-600"><svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20"><path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"/><path fill-rule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z" clip-rule="evenodd"/></svg></div>
+                        <h3 class="font-bold text-slate-700 group-hover:text-emerald-700">Data Klaster 3: Usia Dewasa & Lansia</h3>
+                    </div>
+                    <span class="text-emerald-500 font-medium text-sm hidden md:block">Buka Dokumen →</span>
+                </a>
+                <a href="https://docs.google.com/spreadsheets/d/1jO66yvBn4Ps_KIjruRSDuxlojjzOoOGRM7uG9n9Sezs/edit?gid=258060967#gid=258060967" target="_blank" class="flex items-center justify-between p-5 bg-slate-50 rounded-lg hover:bg-emerald-50 hover:shadow-md transition-all border border-slate-100 group">
+                    <div class="flex items-center gap-4">
+                        <div class="bg-emerald-100 p-3 rounded-full text-emerald-600"><svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20"><path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"/><path fill-rule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z" clip-rule="evenodd"/></svg></div>
+                        <h3 class="font-bold text-slate-700 group-hover:text-emerald-700">Data Klaster 4: Penanggulangan Penyakit</h3>
+                    </div>
+                    <span class="text-emerald-500 font-medium text-sm hidden md:block">Buka Dokumen →</span>
+                </a>
+                <a href="https://docs.google.com/spreadsheets/d/1sMrWlE9i2RZVfZhCNb_MCdvUrqI0KaJUwha3tDKBPCk/edit?usp=sharing" target="_blank" class="flex items-center justify-between p-5 bg-slate-50 rounded-lg hover:bg-emerald-50 hover:shadow-md transition-all border border-slate-100 group">
+                    <div class="flex items-center gap-4">
+                        <div class="bg-emerald-100 p-3 rounded-full text-emerald-600"><svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20"><path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"/><path fill-rule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z" clip-rule="evenodd"/></svg></div>
+                        <h3 class="font-bold text-slate-700 group-hover:text-emerald-700">Data Klaster 5: Lintas Klaster</h3>
+                    </div>
+                    <span class="text-emerald-500 font-medium text-sm hidden md:block">Buka Dokumen →</span>
+                </a>
+            </div>
+        </div>
+
+        <!-- ===== KONTEN TAB 3: DATA DUKUNG DRIVE ===== -->
+        <div id="menu-arsip" class="tab-content bg-white p-6 md:p-8 rounded-2xl shadow-xl border border-slate-100 min-h-[500px]">
+            <div class="mb-8 relative">
+                <input type="text" id="searchInput" onkeyup="cariDokumen()" placeholder="Cari data dukung, file, atau folder arsip..." class="w-full p-4 pl-12 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm transition-all text-slate-700">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 absolute left-4 top-4 text-slate-400">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+                </svg>
+            </div>
+            <h2 class="text-xl font-bold border-b-2 border-slate-100 pb-3 mb-6 text-slate-800 flex items-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 text-blue-600"><path stroke-linecap="round" stroke-linejoin="round" d="M20.25 6.375c0 2.278-3.694 4.125-8.25 4.125S3.75 8.653 3.75 6.375m16.5 0c0-2.278-3.694-4.125-8.25-4.125S3.75 4.097 3.75 6.375m16.5 0v11.25c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125V6.375m16.5 0v3.75m-16.5-3.75v3.75m16.5 0v3.75C20.25 16.153 16.556 18 12 18s-8.25-1.847-8.25-4.125v-3.75m16.5 0c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125" /></svg>
+                Direktori Data Dukung Terpusat
+            </h2>
+            <div id="loadingArea">
+                <div class="loader"></div>
+                <p class="text-center text-slate-500 text-sm animate-pulse">Menghubungkan ke server arsip...</p>
+            </div>
+            <div id="direktoriContainer" class="space-y-3"></div>
+        </div>
+
+        <!-- ===== KONTEN TAB 4: CATATAN BERSAMA ===== -->
+        <div id="menu-catatan" class="tab-content bg-white p-6 md:p-8 rounded-2xl shadow-xl border border-slate-100 min-h-[400px]">
+            <div class="flex items-center justify-between mb-2">
+                <h2 class="text-2xl font-bold text-slate-800 flex items-center gap-2">
+                    <svg class="w-6 h-6 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931z" />
+                    </svg>
+                    Catatan Bersama
+                </h2>
+                <!-- Tombol Edit -->
+                <button id="btn-edit-catatan" onclick="mulaiEdit()"
+                    class="hidden flex items-center gap-2 bg-slate-100 hover:bg-blue-50 hover:text-blue-600 text-slate-500 px-4 py-2 rounded-full font-medium text-sm transition-all">
+                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931z" />
+                    </svg>
+                    Edit
+                </button>
+            </div>
+            <p class="text-slate-500 mb-6">Papan catatan bersama seluruh pegawai. Siapapun dapat mengubah isi catatan ini.</p>
+
+            <!-- Loading -->
+            <div id="catatan-loading" class="text-center py-10">
+                <div class="loader"></div>
+                <p class="text-slate-400 text-sm animate-pulse mt-2">Memuat catatan...</p>
+            </div>
+
+            <!-- MODE TAMPIL: link bisa diklik -->
+            <div id="catatan-tampil" class="hidden">
+                <div id="isiCatatanTampil"
+                    class="w-full p-4 border border-slate-200 rounded-xl text-slate-700 bg-slate-50 text-sm leading-relaxed min-h-[200px] whitespace-pre-wrap break-words">
+                </div>
+                <div class="flex justify-end mt-4">
+                    <button onclick="mulaiEdit()"
+                        class="flex items-center gap-2 bg-slate-100 hover:bg-blue-50 hover:text-blue-600 text-slate-500 px-5 py-2.5 rounded-full font-medium text-sm transition-all">
+                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931z" />
+                        </svg>
+                        Edit Catatan
+                    </button>
+                </div>
+            </div>
+
+            <!-- MODE EDIT: textarea -->
+            <div id="catatan-edit" class="hidden">
+                <textarea id="isiCatatan" rows="10"
+                    class="w-full p-4 border border-slate-200 rounded-xl text-slate-700 bg-slate-50 focus:outline-none focus:ring-2 focus:ring-blue-400 resize-y text-sm leading-relaxed shadow-inner transition-all"
+                    placeholder="Tulis catatan di sini... Link seperti https://... akan otomatis bisa diklik saat ditampilkan."></textarea>
+                <div class="flex items-center justify-between mt-4">
+                    <button onclick="batalEdit()"
+                        class="text-slate-400 hover:text-slate-600 text-sm font-medium px-4 py-2 rounded-full hover:bg-slate-100 transition-all">
+                        Batal
+                    </button>
+                    <div class="flex items-center gap-3">
+                        <p id="catatan-status" class="text-sm text-slate-400 italic"></p>
+                        <button onclick="simpanCatatan()"
+                            class="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-6 py-2.5 rounded-full font-semibold text-sm transition-all hover:shadow-lg active:scale-95">
+                            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                            </svg>
+                            Simpan Catatan
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <script>
+        const API_URL = "https://script.google.com/macros/s/AKfycbw7dhXhmVuT83FY4VXZVJzSj2U2IySeHrLQpAEArhn5nMtej_XUOKOFle9Y9pI__l42Eg/exec";
+
+        function bukaTab(tabId, btnElement) {
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('text-blue-700', 'shadow-lg', 'border-blue-100');
+                btn.classList.add('text-slate-500', 'shadow-md', 'border-transparent');
+            });
+            document.getElementById(tabId).classList.add('active');
+            btnElement.classList.remove('text-slate-500', 'shadow-md', 'border-transparent');
+            btnElement.classList.add('text-blue-700', 'shadow-lg', 'border-blue-100');
+        }
+
+        window.addEventListener('load', function() {
+            setTimeout(function() {
+                const preloader = document.getElementById('preloader');
+                preloader.style.opacity = '0';
+                setTimeout(function() {
+                    preloader.style.display = 'none';
+                    document.body.classList.remove('loading-lock');
+                    document.getElementById('menu-link').classList.add('active');
+                }, 1000); 
+            }, 800); 
+        });
+
+        const svgChevron = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5 text-slate-400 transition-transform duration-300 arrow"><path fill-rule="evenodd" d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z" clip-rule="evenodd" /></svg>`;
+        const svgFolderRoot = `<svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 24 24" class="w-6 h-6 text-blue-500"><path d="M19.5 21a3 3 0 003-3v-4.5a3 3 0 00-3-3h-15a3 3 0 00-3 3V18a3 3 0 003 3h15zM1.5 10.146V6a3 3 0 013-3h5.379a2.25 2.25 0 011.59.659l2.122 2.121c.14.141.331.22.53.22H19.5a3 3 0 013 3v1.146A4.483 4.483 0 0019.5 9h-15a4.483 4.483 0 00-3 1.146z" /></svg>`;
+        const svgFolderSub = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 text-blue-400"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 9.776c.112-.017.227-.026.344-.026h15.812c.117 0 .232.009.344.026m-16.5 0a2.25 2.25 0 00-1.883 2.542l.857 6a2.25 2.25 0 002.227 1.932H19.05a2.25 2.25 0 002.227-1.932l.857-6a2.25 2.25 0 00-1.883-2.542m-16.5 0V6A2.25 2.25 0 016 3.75h3.879a1.5 1.5 0 011.06.44l2.122 2.12a1.5 1.5 0 001.06.44H18A2.25 2.25 0 0120.25 9v.776" /></svg>`;
+        const svgFile = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 text-slate-400 group-hover:text-blue-600 transition-colors"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z" /></svg>`;
+        const svgExternal = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" /></svg>`;
+        const svgCopy = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M15.666 3.888A2.25 2.25 0 0013.5 2.25h-3c-1.03 0-1.9.693-2.166 1.638m7.332 0c.055.194.084.4.084.612v0a.75.75 0 01-.75.75H9a.75.75 0 01-.75-.75v0c0-.212.03-.418.084-.612m7.332 0c.646.049 1.288.11 1.927.184 1.1.128 1.907 1.077 1.907 2.185V19.5a2.25 2.25 0 01-2.25 2.25H6.75A2.25 2.25 0 014.5 19.5V6.257c0-1.108.806-2.057 1.907-2.185a48.208 48.208 0 011.927-.184" /></svg>`;
+
+        async function ambilDataDrive() {
+            try {
+                const response = await fetch(API_URL);
+                const data = await response.json();
+                document.getElementById('loadingArea').style.display = 'none';
+                let treeData;
+                if (Array.isArray(data)) {
+                    treeData = data; 
+                } else {
+                    treeData = data.tree; 
+                }
+                renderTree(treeData, document.getElementById('direktoriContainer'));
+            } catch (error) {
+                document.getElementById('loadingArea').innerHTML = "<p class='text-center text-red-500 font-medium mt-5'>Gagal mengambil data. Periksa koneksi atau Link API.</p>";
+            }
+        }
+
+        let folderCounter = 0;
+        function renderTree(nodes, parentElement, isRoot = true) {
+            const folders = nodes.filter(n => n.type === 'folder');
+            const files = nodes.filter(n => n.type === 'file');
+
+            folders.forEach(node => {
+                folderCounter++;
+                const currentId = 'folder_' + folderCounter;
+                const div = document.createElement('div');
+                div.className = isRoot ? 'border border-slate-200 rounded-lg overflow-hidden bg-white shadow-sm hover:shadow transition-shadow' : 'mt-1';
+                const rowClass = isRoot 
+                    ? 'w-full flex items-center justify-between bg-slate-50 hover:bg-slate-100 transition-colors border-b border-slate-100'
+                    : 'w-full flex items-center justify-between rounded-md hover:bg-blue-50 transition-colors';
+                const btnClass = isRoot 
+                    ? 'flex items-center gap-3 p-4 flex-1 text-left font-semibold text-slate-700 overflow-hidden'
+                    : 'flex items-center gap-3 p-2.5 flex-1 text-left font-medium text-slate-600 hover:text-blue-700 overflow-hidden';
+                div.innerHTML = `
+                    <div class="${rowClass}">
+                        <button onclick="toggleFolder('${currentId}', this)" class="${btnClass}">
+                            <div class="flex items-center justify-center flex-shrink-0">${svgChevron}</div>
+                            <div class="flex items-center justify-center flex-shrink-0">${isRoot ? svgFolderRoot : svgFolderSub}</div>
+                            <span class="truncate">${node.name}</span>
+                        </button>
+                        ${node.url ? `
+                        <div class="flex items-center pr-2 gap-1 flex-shrink-0">
+                            <button onclick="salinLink('${node.url}', this)" title="Salin Link Drive" class="p-2 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-full transition-all">
+                                ${svgCopy}
+                            </button>
+                            <a href="${node.url}" target="_blank" title="Buka di Google Drive" class="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-100 rounded-full transition-all">
+                                ${svgExternal}
+                            </a>
+                        </div>` : ''}
+                    </div>
+                    <div id="${currentId}" class="folder-content ${isRoot ? 'bg-white' : ''}">
+                        <div class="${isRoot ? 'p-4 border-t border-slate-100' : 'pl-8 pr-2 pb-2 mt-1'} inner-content space-y-2"></div>
+                    </div>
+                `;
+                parentElement.appendChild(div);
+                const contentContainer = div.querySelector('.inner-content');
+                if (node.children.length === 0 && files.length === 0) {
+                    contentContainer.innerHTML = '<div class="text-sm text-slate-400 italic pl-4">Folder ini kosong...</div>';
+                } else {
+                    renderTree(node.children, contentContainer, false);
+                }
+            });
+
+            if (files.length > 0) {
+                const ul = document.createElement('ul');
+                ul.className = 'space-y-1.5 mt-2';
+                files.forEach(node => {
+                    const li = document.createElement('li');
+                    li.className = 'file-item group flex items-center justify-between rounded-md hover:bg-blue-50 transition-colors pr-2';
+                    li.innerHTML = `
+                        <a href="${node.url}" target="_blank" class="flex items-center gap-3 p-2 flex-1 overflow-hidden">
+                            <div class="flex-shrink-0">${svgFile}</div>
+                            <span class="text-sm text-slate-600 group-hover:text-blue-700 font-medium truncate">${node.name}</span>
+                        </a>
+                        <button onclick="salinLink('${node.url}', this)" title="Salin Link File" class="p-1.5 flex-shrink-0 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-full transition-all opacity-0 group-hover:opacity-100 focus:opacity-100">
+                            ${svgCopy}
+                        </button>
+                    `;
+                    ul.appendChild(li);
+                });
+                parentElement.appendChild(ul);
+            }
+        }
+
+        function salinLink(url, btnElement) {
+            if(window.event) {
+                window.event.stopPropagation();
+                window.event.preventDefault();
+            }
+            navigator.clipboard.writeText(url).then(() => {
+                const originalHTML = btnElement.innerHTML;
+                btnElement.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 text-emerald-500"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" /></svg>`;
+                setTimeout(() => { btnElement.innerHTML = originalHTML; }, 2000);
+            }).catch(err => {
+                alert("Gagal menyalin link!");
+            });
+        }
+
+        function toggleFolder(folderId, btnElement) {
+            document.getElementById(folderId).classList.toggle('open');
+            const arrow = btnElement.querySelector('.arrow');
+            if (arrow) arrow.classList.toggle('rotate-90');
+        }
+
+        function cariDokumen() {
+            let input = document.getElementById('searchInput').value.toLowerCase();
+            let fileItems = document.querySelectorAll('.file-item');
+            let allFolderWrappers = Array.from(document.querySelectorAll('#direktoriContainer div[id^="folder_"]')).map(el => el.parentElement).reverse();
+
+            if (input === "") {
+                fileItems.forEach(item => item.style.display = "");
+                allFolderWrappers.forEach(wrapper => {
+                    wrapper.style.display = "";
+                    let content = wrapper.querySelector('.folder-content');
+                    let arrow = wrapper.querySelector('.arrow');
+                    if(content) content.classList.remove('open');
+                    if(arrow) arrow.classList.remove('rotate-90');
+                });
+                return;
+            }
+
+            fileItems.forEach(item => {
+                if (item.textContent.toLowerCase().includes(input)) {
+                    item.style.display = "";
+                    item.setAttribute('data-match', 'true'); 
+                } else {
+                    item.style.display = "none";
+                    item.removeAttribute('data-match');
+                }
+            });
+
+            allFolderWrappers.forEach(wrapper => {
+                let btnText = wrapper.querySelector('button span').textContent.toLowerCase();
+                let content = wrapper.querySelector('.folder-content');
+                let hasMatchedFile = content.querySelectorAll('.file-item[data-match="true"]').length > 0;
+                let hasMatchedFolder = content.querySelectorAll('div[data-match="true"]').length > 0;
+
+                if (btnText.includes(input) || hasMatchedFile || hasMatchedFolder) {
+                    wrapper.style.display = "";
+                    wrapper.setAttribute('data-match', 'true'); 
+                    content.classList.add('open'); 
+                    let arrow = wrapper.querySelector('.arrow');
+                    if (arrow) arrow.classList.add('rotate-90');
+                } else {
+                    wrapper.style.display = "none"; 
+                    wrapper.removeAttribute('data-match');
+                    content.classList.remove('open');
+                    let arrow = wrapper.querySelector('.arrow');
+                    if (arrow) arrow.classList.remove('rotate-90');
+                }
+            });
+        }
+
+        // Konversi teks biasa → link bisa diklik
+        function teksKeHtml(teks) {
+            const urlRegex = /(https?:\/\/[^\s]+)/g;
+            const escaped = teks
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;');
+            return escaped.replace(urlRegex, url => 
+                `<a href="${url}" target="_blank" class="text-blue-600 hover:text-blue-800 underline break-all">${url}</a>`
+            );
+        }
+
+        let isiCatatanAsli = '';
+
+        async function ambilCatatan() {
+            try {
+                const res = await fetch(API_URL + '?action=getCatatan');
+                const data = await res.json();
+                isiCatatanAsli = data.isi || '';
+                document.getElementById('catatan-loading').style.display = 'none';
+                tampilkanCatatan(isiCatatanAsli);
+            } catch {
+                document.getElementById('catatan-loading').innerHTML = 
+                    "<p class='text-red-500 text-center'>Gagal memuat catatan.</p>";
+            }
+        }
+
+        function tampilkanCatatan(teks) {
+            const el = document.getElementById('iisiCatatanTampil') || document.getElementById('isiCatatanTampil');
+            el.innerHTML = teks ? teksKeHtml(teks) : '<span class="text-slate-400 italic">Belum ada catatan.</span>';
+            document.getElementById('catatan-tampil').classList.remove('hidden');
+            document.getElementById('catatan-edit').classList.add('hidden');
+        }
+
+        function mulaiEdit() {
+            document.getElementById('isiCatatan').value = isiCatatanAsli;
+            document.getElementById('catatan-tampil').classList.add('hidden');
+            document.getElementById('catatan-edit').classList.remove('hidden');
+            document.getElementById('isiCatatan').focus();
+        }
+
+        function batalEdit() {
+            tampilkanCatatan(isiCatatanAsli);
+        }
+
+        async function simpanCatatan() {
+            const isi = document.getElementById('isiCatatan').value;
+            const statusEl = document.getElementById('catatan-status');
+            statusEl.textContent = 'Menyimpan...';
+            try {
+                await fetch(API_URL, {
+                    method: 'POST',
+                    body: JSON.stringify({ isi }),
+                });
+                isiCatatanAsli = isi;
+                statusEl.textContent = '✅ Tersimpan!';
+                setTimeout(() => {
+                    statusEl.textContent = '';
+                    tampilkanCatatan(isiCatatanAsli);
+                }, 1500);
+            } catch {
+                statusEl.textContent = '❌ Gagal menyimpan. Coba lagi.';
+            }
+        }
+
+        ambilDataDrive();
+        ambilCatatan();
+    </script>
+</body>
+</html>
