@@ -9,7 +9,14 @@
     <script>
         tailwind.config = {
             darkMode: 'class',
-            theme: { extend: {} }
+            theme: { 
+                extend: {
+                    boxShadow: {
+                        'glow-blue': '0 0 15px rgba(59, 130, 246, 0.4)',
+                        'glow-blue-dark': '0 0 15px rgba(96, 165, 250, 0.3)',
+                    }
+                } 
+            }
         }
     </script>
 
@@ -45,11 +52,13 @@
         details > summary { list-style: none; }
         details > summary::-webkit-details-marker { display: none; }
 
+        .fade-text { transition: opacity 0.5s ease-in-out; }
+
         /* ====================================================
            CSS UNTUK TEMA SWITCH UIVERSE.IO (GALAHHAD)
            ==================================================== */
         .theme-switch {
-            --toggle-size: 13px; /* Ukuran dasar, bisa diubah untuk memperbesar/memperkecil */
+            --toggle-size: 13px;
             --container-width: 5.625em;
             --container-height: 2.5em;
             --container-radius: 6.25em;
@@ -236,6 +245,13 @@
 
     <main id="portal-area" class="relative z-20 max-w-5xl mx-auto px-4 md:px-8 mt-[-60px] pb-20">
         
+        <div class="max-w-xl mx-auto mb-8 bg-white/60 dark:bg-slate-800/60 backdrop-blur-md border border-slate-200/50 dark:border-slate-700/50 rounded-full px-5 py-2.5 flex items-center gap-3 shadow-md opacity-0 animate-fade-blur delay-3 relative overflow-hidden">
+            <div class="flex-shrink-0 flex items-center justify-center w-6 h-6 rounded-full bg-emerald-100 dark:bg-emerald-900/50 text-emerald-600 dark:text-emerald-400">
+                <svg class="w-3.5 h-3.5 animate-pulse" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
+            </div>
+            <p class="text-xs md:text-sm text-slate-600 dark:text-slate-300 font-medium truncate flex-1 fade-text" id="activity-log-text">Sistem Audit & Log siap memantau aktivitas...</p>
+        </div>
+
         <div class="flex flex-wrap justify-center gap-2 md:gap-4 mb-8 opacity-0 animate-fade-blur delay-4">
             <button onclick="bukaTab('menu-link', this)" class="tab-btn active bg-white dark:bg-slate-800 shadow-lg dark:shadow-slate-900/50 text-blue-700 dark:text-blue-400 px-6 py-3 rounded-full font-semibold text-sm transition-all hover:-translate-y-1 hover:shadow-xl border border-blue-100 dark:border-slate-700 flex items-center gap-2">
                 <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13.19 8.688a4.5 4.5 0 011.242 7.244l-4.5 4.5a4.5 4.5 0 01-6.364-6.364l1.757-1.757m13.35-.622l1.757-1.757a4.5 4.5 0 00-6.364-6.364l-4.5 4.5a4.5 4.5 0 001.242 7.244" /></svg>
@@ -272,7 +288,7 @@
                     <h3 class="font-bold text-lg text-slate-700 dark:text-slate-200 group-hover:text-blue-700 dark:group-hover:text-blue-400 mb-2">ASIK Kemenkes</h3>
                     <p class="text-sm text-slate-500 dark:text-slate-400">Aplikasi Sehat Indonesiaku untuk pelaporan program kesehatan.</p>
                 </a>
-                <a href="#" target="_blank" class="group block p-6 border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 rounded-xl hover:bg-blue-50 dark:hover:bg-slate-700 hover:border-blue-300 dark:hover:border-blue-500 transition-colors">
+                <a href="https://gondanglegi.m3tech.id/" target="_blank" class="group block p-6 border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 rounded-xl hover:bg-blue-50 dark:hover:bg-slate-700 hover:border-blue-300 dark:hover:border-blue-500 transition-colors">
                     <h3 class="font-bold text-lg text-slate-700 dark:text-slate-200 group-hover:text-blue-700 dark:group-hover:text-blue-400 mb-2">SI ABHA PELIT</h3>
                     <p class="text-sm text-slate-500 dark:text-slate-400">Monitoring absensi digital pegawai secara terpusat.</p>
                 </a>
@@ -339,8 +355,8 @@
 
         <div id="menu-arsip" class="tab-content bg-white dark:bg-slate-900 p-6 md:p-8 rounded-2xl shadow-xl border border-slate-100 dark:border-slate-800 min-h-[500px]">
             <div class="mb-8 relative">
-                <input type="text" id="searchInput" onkeyup="cariDokumen()" placeholder="Cari data dukung, file, atau folder arsip..." class="w-full p-4 pl-12 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 shadow-sm transition-all text-slate-700 dark:text-slate-200">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 absolute left-4 top-4 text-slate-400 dark:text-slate-500">
+                <input type="text" id="searchInput" onkeyup="cariDokumen()" placeholder="Menunggu..." class="w-full p-4 pl-12 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg focus:outline-none focus:border-blue-400 dark:focus:border-blue-500 focus:shadow-glow-blue dark:focus:shadow-glow-blue-dark transition-all duration-300 text-slate-700 dark:text-slate-200 font-medium">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 absolute left-4 top-4 text-blue-500 dark:text-blue-400 animate-pulse">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
                 </svg>
             </div>
@@ -517,16 +533,79 @@
             const h = now.getHours();
             if (h >= 5 && h < 11) greeting = "Selamat Pagi, Semangat Melayani!";
             else if (h >= 11 && h < 15) greeting = "Selamat Siang, Tetap Fokus!";
-            else if (h >= 15 && h < 18) greeting = "Selamat Sore, Tetap Semangat!";
+            else if (h >= 15 && h < 18) greeting = "Selamat Sore, Sebentar lagi selesai!";
             
             document.getElementById('greeting-text').textContent = greeting;
         }
         setInterval(updateClock, 1000);
         updateClock();
 
+        // --- FITUR: LOG AKTIVITAS (AUDIT TRAIL) ---
+        const logs = [
+            "Sistem sedang mensinkronisasi data Arsip...",
+            "Pengecekan integritas sistem: Aman (100%).",
+            "Menunggu aktivitas pada SI ABHA PELIT...",
+            "Portal Terpadu siap digunakan."
+        ];
+        let logIndex = 0;
+        const logElement = document.getElementById('activity-log-text');
+        
+        function rotateLog() {
+            logElement.style.opacity = 0;
+            setTimeout(() => {
+                logIndex = (logIndex + 1) % logs.length;
+                logElement.textContent = logs[logIndex];
+                logElement.style.opacity = 1;
+            }, 500); 
+        }
+        setInterval(rotateLog, 7000);
+
+        function addCustomLog(text) {
+            logElement.style.opacity = 0;
+            setTimeout(() => {
+                logElement.textContent = text;
+                logElement.style.opacity = 1;
+            }, 500);
+        }
+
+        // --- FITUR: PENCARIAN AI-STYLE (TYPING EFFECT) ---
+        const searchInput = document.getElementById('searchInput');
+        const searchPlaceholders = [
+            "Cari data dukung arsip PKP...", 
+            "Cari Laporan Monev Kepegawaian...", 
+            "Cari dokumen Program PTM...", 
+            "Cari file laporan Logistik..."
+        ];
+        let pIndex = 0;
+        let charIndex = 0;
+        let isDeleting = false;
+
+        function typePlaceholder() {
+            const currentText = searchPlaceholders[pIndex];
+            
+            if (isDeleting) {
+                searchInput.setAttribute('placeholder', currentText.substring(0, charIndex - 1));
+                charIndex--;
+            } else {
+                searchInput.setAttribute('placeholder', currentText.substring(0, charIndex + 1));
+                charIndex++;
+            }
+
+            let typeSpeed = isDeleting ? 30 : 70;
+
+            if (!isDeleting && charIndex === currentText.length) {
+                typeSpeed = 2000; 
+                isDeleting = true;
+            } else if (isDeleting && charIndex === 0) {
+                isDeleting = false;
+                pIndex = (pIndex + 1) % searchPlaceholders.length;
+                typeSpeed = 500; 
+            }
+            setTimeout(typePlaceholder, typeSpeed);
+        }
+
         // --- FITUR 4: TEMA SWITCH (DARK/LIGHT MODE) ---
         const themeCheckbox = document.getElementById('theme-checkbox');
-        
         function initTheme() {
             if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
                 document.documentElement.classList.add('dark');
@@ -536,14 +615,15 @@
                 themeCheckbox.checked = false;
             }
         }
-
         themeCheckbox.addEventListener('change', (e) => {
             if (e.target.checked) {
                 document.documentElement.classList.add('dark');
                 localStorage.theme = 'dark';
+                addCustomLog("Mode Gelap (Dark Mode) diaktifkan.");
             } else {
                 document.documentElement.classList.remove('dark');
                 localStorage.theme = 'light';
+                addCustomLog("Mode Terang (Light Mode) diaktifkan.");
             }
         });
         initTheme();
@@ -570,6 +650,9 @@
                     preloader.style.display = 'none';
                     document.body.classList.remove('loading-lock');
                     document.getElementById('menu-link').classList.add('active');
+                    
+                    // Mulai animasi typing setelah preloader hilang
+                    setTimeout(typePlaceholder, 500);
                 }, 1000); 
             }, 800); 
         });
@@ -589,8 +672,10 @@
                 document.getElementById('loadingArea').style.display = 'none';
                 let treeData = Array.isArray(data) ? data : data.tree;
                 renderTree(treeData, document.getElementById('direktoriContainer'));
+                addCustomLog("Direktori arsip Google Drive berhasil dimuat.");
             } catch (error) {
                 document.getElementById('loadingArea').innerHTML = "<p class='text-center text-red-500 font-medium mt-5'>Gagal mengambil data. Periksa koneksi atau Link API.</p>";
+                addCustomLog("❌ Gagal terhubung ke Google Drive.");
             }
         }
 
@@ -780,13 +865,15 @@
             document.getElementById('catatan-tampil').classList.add('hidden');
             document.getElementById('catatan-edit').classList.remove('hidden');
             document.getElementById('edit-ckg').focus();
+            
+            addCustomLog("Mode Edit Catatan Bersama dibuka.");
         }
 
         function batalEdit() {
             tampilkanCatatan();
         }
 
-        // --- FITUR 2: GAMIFIKASI PADA TOMBOL SIMPAN ---
+        // --- GAMIFIKASI PADA TOMBOL SIMPAN ---
         function fireConfetti() {
             var duration = 2 * 1000;
             var end = Date.now() + duration;
@@ -833,8 +920,9 @@
                 isiCatatanAsliObj = newObj;
                 statusEl.innerHTML = '<span class="text-emerald-500 dark:text-emerald-400 font-medium">✅ Tersimpan!</span>';
                 
-                // Memicu Gamifikasi (Confetti) saat berhasil menyimpan
+                // Memicu Gamifikasi (Confetti) & Update Log
                 fireConfetti();
+                addCustomLog("Pembaruan pada Catatan Bersama berhasil disimpan.");
                 
                 setTimeout(() => {
                     statusEl.textContent = '';
@@ -842,6 +930,7 @@
                 }, 1500);
             } catch {
                 statusEl.innerHTML = '<span class="text-red-500 dark:text-red-400">❌ Gagal menyimpan.</span>';
+                addCustomLog("Peringatan: Gagal menyimpan Catatan Bersama.");
             }
         }
 
