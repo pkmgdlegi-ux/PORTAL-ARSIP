@@ -271,6 +271,12 @@
                 </svg>
                 Catatan Bersama
             </button>
+            <button onclick="bukaTab('menu-galeri', this)" class="tab-btn bg-white dark:bg-slate-800 shadow-md text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 px-6 py-3 rounded-full font-medium text-sm transition-all hover:-translate-y-1 hover:shadow-xl border border-transparent dark:border-slate-700 flex items-center gap-2">
+                <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+                Galeri Puspahati
+            </button>
         </div>
 
         <div id="menu-link" class="tab-content active bg-white dark:bg-slate-900 p-8 rounded-2xl shadow-xl border border-slate-100 dark:border-slate-800">
@@ -533,6 +539,33 @@
                         </button>
                     </div>
                 </div>
+            </div>
+        </div>
+
+        <div id="menu-galeri" class="tab-content bg-white dark:bg-slate-900 p-8 rounded-2xl shadow-xl border border-slate-100 dark:border-slate-800 text-center">
+            
+            <div class="max-w-2xl mx-auto">
+                <div class="w-20 h-20 mx-auto mb-6 bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 rounded-full flex items-center justify-center">
+                    <svg class="w-10 h-10" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                </div>
+                
+                <h2 class="text-3xl font-bold text-slate-800 dark:text-slate-100 mb-4">Galeri Puspahati</h2>
+                <p class="text-slate-500 dark:text-slate-400 mb-8 leading-relaxed">
+                    Ruang memori kebersamaan keluarga besar Puskesmas Gondanglegi. Di sini, Anda dapat melihat kembali momen-momen berharga dan mengunduh foto yang Anda inginkan.
+                </p>
+
+                <a href="https://drive.google.com/drive/folders/1J1wOM5r2_D8rPi4fiVkl6H1i6zlcJ_E-?usp=sharing" target="_blank" onclick="addCustomLog('Mengakses Galeri Puspahati...')" class="inline-flex items-center gap-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-8 py-4 rounded-full font-bold text-lg shadow-lg hover:shadow-xl transition-all transform hover:-translate-y-1">
+                    Buka Album Galeri
+                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                    </svg>
+                </a>
+                
+                <p class="mt-6 text-xs text-slate-400 dark:text-slate-500 italic">
+                    *Album ini diamankan dengan akses "Hanya Pelihat" untuk menjaga kelengkapan data.
+                </p>
             </div>
         </div>
 
@@ -839,7 +872,6 @@
 
         // --- LOGIKA CATATAN BERSAMA (JSON BASED) ---
         let isiCatatanAsliObj = {};
-        // PENAMBAHAN 'lain_lain' PADA ARRAY KUNCI JSON
         const KATEGORI_KEYS = ['ckg', 'kep_ekin', 'kep_cuti', 'kep_kehadiran', 'kep_sip', 'kep_pangkat', 'kep_kgb', 'logistik', 'sitb', 'ptm', 'lansia', 'dokumentasi', 'lain_lain'];
 
         async function ambilCatatan() {
