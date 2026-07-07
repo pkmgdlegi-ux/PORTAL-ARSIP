@@ -572,7 +572,8 @@
     </main>
 
     <script>
-        const API_URL = "https://script.google.com/macros/s/AKfycbzspfMstBnfECeYUT6aB3rA6iHr33U32RlP0lsOrF2AKG_Cubwu0ntLLYHmjzQkMkvD/exec";
+        // PASTIKAN LINK API INI ADALAH LINK TERBARU ANDA
+        const API_URL = "https://script.google.com/macros/s/AKfycbxwuN3m9ONUbSyBstIcsCHQP-hkrn1H4RTxUVqjNZhcL9J1w9zgoB2cGBFk6NgpEXx7Xw/exec";
 
         function updateClock() {
             const now = new Date();
@@ -711,30 +712,50 @@
         const svgExternal = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" /></svg>`;
         const svgCopy = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M15.666 3.888A2.25 2.25 0 0013.5 2.25h-3c-1.03 0-1.9.693-2.166 1.638m7.332 0c.055.194.084.4.084.612v0a.75.75 0 01-.75.75H9a.75.75 0 01-.75-.75v0c0-.212.03-.418.084-.612m7.332 0c.646.049 1.288.11 1.927.184 1.1.128 1.907 1.077 1.907 2.185V19.5a2.25 2.25 0 01-2.25 2.25H6.75A2.25 2.25 0 014.5 19.5V6.257c0-1.108.806-2.057 1.907-2.185a48.208 48.208 0 011.927-.184" /></svg>`;
 
+        // =========================================================
+        // LOGIKA LAZY LOADING GOOGLE DRIVE + PERBAIKAN URUTAN
+        // =========================================================
+        let globalFolderCount = 0;
+
         async function ambilDataDrive() {
             try {
                 const response = await fetch(API_URL);
                 const data = await response.json();
                 document.getElementById('loadingArea').style.display = 'none';
-                let treeData = Array.isArray(data) ? data : data.tree;
-                renderTree(treeData, document.getElementById('direktoriContainer'));
-                addCustomLog("Direktori arsip Google Drive berhasil dimuat.");
+                
+                let items = data.tree || data; 
+                renderItems(items, document.getElementById('direktoriContainer'), true);
+                
+                addCustomLog("Direktori arsip utama berhasil dimuat.");
             } catch (error) {
                 document.getElementById('loadingArea').innerHTML = "<p class='text-center text-red-500 font-medium mt-5'>Gagal mengambil data. Periksa koneksi atau Link API.</p>";
                 addCustomLog("❌ Gagal terhubung ke Google Drive.");
             }
         }
 
-        let folderCounter = 0;
-        function renderTree(nodes, parentElement, isRoot = true) {
-            const folders = nodes.filter(n => n.type === 'folder');
-            const files = nodes.filter(n => n.type === 'file');
+        function renderItems(items, parentElement, isRoot = false) {
+            let folders = items.filter(n => n.type === 'folder');
+            let files = items.filter(n => n.type === 'file');
+
+            // Mengurutkan Folder: Klaster 1-4 di atas (A-Z), LINTAS KLASTER di paling bawah
+            folders.sort((a, b) => {
+                let nameA = a.name.toUpperCase();
+                let nameB = b.name.toUpperCase();
+                
+                if (nameA === "LINTAS KLASTER") return 1;
+                if (nameB === "LINTAS KLASTER") return -1;
+                
+                return nameA.localeCompare(nameB);
+            });
+            
+            // Mengurutkan File agar alfabetis dan rapi
+            files.sort((a, b) => a.name.localeCompare(b.name));
 
             folders.forEach(node => {
-                folderCounter++;
-                const currentId = 'folder_' + folderCounter;
+                globalFolderCount++;
+                const currentId = 'lazy_folder_' + globalFolderCount;
                 const div = document.createElement('div');
-                div.className = isRoot ? 'border border-slate-200 dark:border-slate-700 rounded-lg overflow-hidden bg-white dark:bg-slate-800 shadow-sm' : 'mt-1';
+                div.className = isRoot ? 'border border-slate-200 dark:border-slate-700 rounded-lg overflow-hidden bg-white dark:bg-slate-800 shadow-sm mb-3' : 'mt-1';
                 
                 const rowClass = isRoot 
                     ? 'w-full flex items-center justify-between bg-slate-50 dark:bg-slate-900/50 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors border-b border-slate-100 dark:border-slate-700'
@@ -744,34 +765,25 @@
                     ? 'flex items-center gap-3 p-4 flex-1 text-left font-semibold text-slate-700 dark:text-slate-200 overflow-hidden'
                     : 'flex items-center gap-3 p-2.5 flex-1 text-left font-medium text-slate-600 dark:text-slate-300 hover:text-blue-700 dark:hover:text-blue-400 overflow-hidden';
                 
+                // Membuat tautan langsung ke folder Google Drive
+                const driveLink = `https://drive.google.com/drive/folders/${node.id}`;
+
                 div.innerHTML = `
                     <div class="${rowClass}">
-                        <button onclick="toggleFolder('${currentId}', this)" class="${btnClass}">
-                            <div class="flex items-center justify-center flex-shrink-0">${svgChevron}</div>
+                        <button onclick="toggleLazyFolder('${node.id}', '${currentId}', this)" class="${btnClass}">
+                            <div class="flex items-center justify-center flex-shrink-0 arrow-container">${svgChevron}</div>
                             <div class="flex items-center justify-center flex-shrink-0">${isRoot ? svgFolderRoot : svgFolderSub}</div>
                             <span class="truncate">${node.name}</span>
                         </button>
-                        ${node.url ? `
-                        <div class="flex items-center pr-2 gap-1 flex-shrink-0">
-                            <button onclick="salinLink('${node.url}', this)" title="Salin Link Drive" class="p-2 text-slate-400 hover:text-emerald-600 dark:hover:text-emerald-400 rounded-full transition-all">
-                                ${svgCopy}
-                            </button>
-                            <a href="${node.url}" target="_blank" title="Buka di Google Drive" class="p-2 text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 rounded-full transition-all">
-                                ${svgExternal}
-                            </a>
-                        </div>` : ''}
+                        <a href="${driveLink}" target="_blank" title="Buka Folder di Google Drive" class="p-3 mr-2 text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 rounded-full transition-all flex-shrink-0">
+                            ${svgExternal}
+                        </a>
                     </div>
-                    <div id="${currentId}" class="folder-content ${isRoot ? 'bg-white dark:bg-slate-800' : ''}">
+                    <div id="${currentId}" data-loaded="false" class="folder-content ${isRoot ? 'bg-white dark:bg-slate-800' : ''}">
                         <div class="${isRoot ? 'p-4 border-t border-slate-100 dark:border-slate-700' : 'pl-8 pr-2 pb-2 mt-1'} inner-content space-y-2"></div>
                     </div>
                 `;
                 parentElement.appendChild(div);
-                const contentContainer = div.querySelector('.inner-content');
-                if (node.children.length === 0 && files.length === 0) {
-                    contentContainer.innerHTML = '<div class="text-sm text-slate-400 dark:text-slate-500 italic pl-4">Folder ini kosong...</div>';
-                } else {
-                    renderTree(node.children, contentContainer, false);
-                }
             });
 
             if (files.length > 0) {
@@ -793,6 +805,52 @@
                 });
                 parentElement.appendChild(ul);
             }
+
+            if (folders.length === 0 && files.length === 0) {
+                 parentElement.innerHTML += '<div class="text-sm text-slate-400 dark:text-slate-500 italic pl-4 py-2">Folder ini kosong...</div>';
+            }
+        }
+
+        async function toggleLazyFolder(googleDriveId, containerId, btnElement) {
+            const container = document.getElementById(containerId);
+            const innerContent = container.querySelector('.inner-content');
+            const arrowContainer = btnElement.querySelector('.arrow-container');
+            const arrow = btnElement.querySelector('.arrow');
+            
+            if (container.classList.contains('open')) {
+                container.classList.remove('open');
+                if (arrow) arrow.classList.remove('rotate-90');
+                return;
+            }
+
+            if (container.dataset.loaded === 'true') {
+                container.classList.add('open');
+                if (arrow) arrow.classList.add('rotate-90');
+                return;
+            }
+
+            const originalArrowHtml = arrowContainer.innerHTML;
+            arrowContainer.innerHTML = `<svg class="w-4 h-4 animate-spin text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>`;
+            
+            try {
+                const res = await fetch(API_URL + "?id=" + googleDriveId);
+                const data = await res.json();
+                let items = data.tree || data;
+                
+                innerContent.innerHTML = ''; 
+                renderItems(items, innerContent, false); 
+                
+                container.dataset.loaded = 'true';
+                container.classList.add('open');
+                
+                arrowContainer.innerHTML = originalArrowHtml;
+                const newArrow = btnElement.querySelector('.arrow');
+                if (newArrow) newArrow.classList.add('rotate-90');
+
+            } catch (err) {
+                innerContent.innerHTML = '<div class="text-red-500 text-sm pl-4 py-2">Gagal memuat isi folder. Coba lagi.</div>';
+                arrowContainer.innerHTML = originalArrowHtml;
+            }
         }
 
         function salinLink(url, btnElement) {
@@ -809,16 +867,10 @@
             });
         }
 
-        function toggleFolder(folderId, btnElement) {
-            document.getElementById(folderId).classList.toggle('open');
-            const arrow = btnElement.querySelector('.arrow');
-            if (arrow) arrow.classList.toggle('rotate-90');
-        }
-
         function cariDokumen() {
             let input = document.getElementById('searchInput').value.toLowerCase();
             let fileItems = document.querySelectorAll('.file-item');
-            let allFolderWrappers = Array.from(document.querySelectorAll('#direktoriContainer div[id^="folder_"]')).map(el => el.parentElement).reverse();
+            let allFolderWrappers = Array.from(document.querySelectorAll('#direktoriContainer div[id^="lazy_folder_"]')).map(el => el.parentElement).reverse();
 
             if (input === "") {
                 fileItems.forEach(item => item.style.display = "");
