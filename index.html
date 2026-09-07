@@ -54,9 +54,6 @@
 
         .fade-text { transition: opacity 0.5s ease-in-out; }
 
-        /* ====================================================
-           CSS UNTUK TEMA SWITCH UIVERSE.IO (GALAHHAD)
-           ==================================================== */
         .theme-switch {
             --toggle-size: 13px;
             --container-width: 5.625em;
@@ -177,7 +174,6 @@
             transition: var(--transition);
         }
 
-        /* --- Checked (Dark Mode) State --- */
         .theme-switch__checkbox:checked + .theme-switch__container {
             background-color: var(--container-night-bg);
         }
@@ -572,8 +568,56 @@
     </main>
 
     <script>
-        // PASTIKAN LINK API INI ADALAH LINK TERBARU ANDA
         const API_URL = "https://script.google.com/macros/s/AKfycbxa2noq7oscI2Y1cjcfAqy1evBXlYlUcFVmUKuliohBKNlmjTxEtri7hTJxLIWfdfwUIQ/exec";
+
+        // =========================================================
+        // PENGATURAN INTEGRASI NOTIFIKASI WHATSAPP GATEWAY
+        // =========================================================
+        const WA_TUNNEL_URL = "https://ontario-chronicle-corporations-theta.trycloudflare.com/send-message";
+        const WA_TARGET_GROUP = "6285330700929-1431168759@g.us";
+
+        const KATEGORI_LABELS = {
+            ckg: "1. Program CKG",
+            kep_ekin: "2. Kepegawaian - Monev Ekin dan BCP",
+            kep_cuti: "2. Kepegawaian - Monev Cuti",
+            kep_kehadiran: "2. Kepegawaian - Monev Kehadiran & Disiplin",
+            kep_sip: "2. Kepegawaian - Monev SIP",
+            kep_pangkat: "2. Kepegawaian - Monev Pangkat & Jabfung",
+            kep_kgb: "2. Kepegawaian - Monev KGB",
+            logistik: "3. Logistik",
+            sitb: "4. Program SITB",
+            ptm: "5. Program PTM",
+            lansia: "6. Program Lansia",
+            dokumentasi: "7. Dokumentasi",
+            lain_lain: "8. Lain-lain"
+        };
+
+        async function kirimNotifikasiWAGrup(daftarPerubahan) {
+            let rincianBagian = "";
+            if (daftarPerubahan && daftarPerubahan.length > 0) {
+                rincianBagian = daftarPerubahan.map(item => `• ${item}`).join('\n');
+            } else {
+                rincianBagian = "• Catatan Umum";
+            }
+
+            const pesan = `📝 *Pembaruan Catatan Bersama*\n\n` +
+                          `Ada perubahan atau penambahan catatan baru pada:\n` +
+                          `${rincianBagian}\n\n` +
+                          `🔗 *Cek Portal:* https://gondanglegi.pkmgdlegi.workers.dev`;
+
+            try {
+                await fetch(WA_TUNNEL_URL, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        target: WA_TARGET_GROUP,
+                        message: pesan
+                    })
+                });
+            } catch (err) {
+                console.warn("Notifikasi WA tidak terkirim (server lokal mungkin tidak aktif):", err);
+            }
+        }
 
         function updateClock() {
             const now = new Date();
@@ -712,9 +756,6 @@
         const svgExternal = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25" /></svg>`;
         const svgCopy = `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M15.666 3.888A2.25 2.25 0 0013.5 2.25h-3c-1.03 0-1.9.693-2.166 1.638m7.332 0c.055.194.084.4.084.612v0a.75.75 0 01-.75.75H9a.75.75 0 01-.75-.75v0c0-.212.03-.418.084-.612m7.332 0c.646.049 1.288.11 1.927.184 1.1.128 1.907 1.077 1.907 2.185V19.5a2.25 2.25 0 01-2.25 2.25H6.75A2.25 2.25 0 014.5 19.5V6.257c0-1.108.806-2.057 1.907-2.185a48.208 48.208 0 011.927-.184" /></svg>`;
 
-        // =========================================================
-        // LOGIKA LAZY LOADING GOOGLE DRIVE + PERBAIKAN URUTAN
-        // =========================================================
         let globalFolderCount = 0;
 
         async function ambilDataDrive() {
@@ -737,18 +778,14 @@
             let folders = items.filter(n => n.type === 'folder');
             let files = items.filter(n => n.type === 'file');
 
-            // Mengurutkan Folder: Klaster 1-4 di atas (A-Z), LINTAS KLASTER di paling bawah
             folders.sort((a, b) => {
                 let nameA = a.name.toUpperCase();
                 let nameB = b.name.toUpperCase();
-                
                 if (nameA === "LINTAS KLASTER") return 1;
                 if (nameB === "LINTAS KLASTER") return -1;
-                
                 return nameA.localeCompare(nameB);
             });
             
-            // Mengurutkan File agar alfabetis dan rapi
             files.sort((a, b) => a.name.localeCompare(b.name));
 
             folders.forEach(node => {
@@ -765,7 +802,6 @@
                     ? 'flex items-center gap-3 p-4 flex-1 text-left font-semibold text-slate-700 dark:text-slate-200 overflow-hidden'
                     : 'flex items-center gap-3 p-2.5 flex-1 text-left font-medium text-slate-600 dark:text-slate-300 hover:text-blue-700 dark:hover:text-blue-400 overflow-hidden';
                 
-                // Membuat tautan langsung ke folder Google Drive
                 const driveLink = `https://drive.google.com/drive/folders/${node.id}`;
 
                 div.innerHTML = `
@@ -922,7 +958,6 @@
             return escaped.replace(urlRegex, url => `<a href="${url}" target="_blank" class="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 underline break-all">${url}</a>`);
         }
 
-        // --- LOGIKA CATATAN BERSAMA (JSON BASED) ---
         let isiCatatanAsliObj = {};
         const KATEGORI_KEYS = ['ckg', 'kep_ekin', 'kep_cuti', 'kep_kehadiran', 'kep_sip', 'kep_pangkat', 'kep_kgb', 'logistik', 'sitb', 'ptm', 'lansia', 'dokumentasi', 'lain_lain'];
 
@@ -999,9 +1034,18 @@
 
         async function simpanCatatan() {
             const newObj = {};
+            const daftarBagianDiubah = [];
+
             KATEGORI_KEYS.forEach(key => {
                 const el = document.getElementById(`edit-${key}`);
-                if(el) newObj[key] = el.value;
+                const val = el ? el.value : '';
+                newObj[key] = val;
+
+                // Deteksi bagian yang mengalami perubahan atau penambahan
+                const valLama = isiCatatanAsliObj[key] || '';
+                if (val.trim() !== valLama.trim()) {
+                    daftarBagianDiubah.push(KATEGORI_LABELS[key] || key);
+                }
             });
 
             const isiString = JSON.stringify(newObj);
@@ -1019,6 +1063,11 @@
                 
                 fireConfetti();
                 addCustomLog("Pembaruan pada Catatan Bersama berhasil disimpan.");
+
+                // Kirim notifikasi WA jika terdapat perubahan
+                if (daftarBagianDiubah.length > 0) {
+                    kirimNotifikasiWAGrup(daftarBagianDiubah);
+                }
                 
                 setTimeout(() => {
                     statusEl.textContent = '';
